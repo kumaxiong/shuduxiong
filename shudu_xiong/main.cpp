@@ -8,14 +8,14 @@
 
 using namespace std;
 
-int g_currentIndex = -1;
-bitset<81> g_affectedFlags[9][9];
-bitset<10> g_candidate[9][9];
-int g_candidateNum[9][9];
+int currentIndex = -1;
+bitset<81> affectedFlags[9][9];
+bitset<10> candidate[9][9];
+int candidateNum[9][9];
 int resultNum;
-const int maxNum = 100;
+const int maxNum = 10000;
 
-int g_map[9][9] = {
+int shudu_map[9][9] = {
 	{ 7,0,0,0,0,0,0,0,0 },
 	{ 0,0,0,0,0,0,0,0,0 },
 	{ 0,0,0,0,0,0,0,0,0 },
@@ -29,24 +29,24 @@ int g_map[9][9] = {
 
 void AddElement(int row, int column, int num)
 {
-	++g_currentIndex;
-	g_map[row][column] = num;
+	++currentIndex;
+	shudu_map[row][column] = num;
 
 	int old;
 	for (int i = 0; i<9; ++i)
 	{
-		if (g_map[row][i] == 0 && g_candidate[row][i].test(num))
+		if (shudu_map[row][i] == 0 && candidate[row][i].test(num))
 		{
-			g_candidate[row][i].reset(num);
-			--g_candidateNum[row][i];
-			g_affectedFlags[row][i].set(g_currentIndex);
+			candidate[row][i].reset(num);
+			--candidateNum[row][i];
+			affectedFlags[row][i].set(currentIndex);
 		}
 
-		if (g_map[i][column] == 0 && g_candidate[i][column].test(num))
+		if (shudu_map[i][column] == 0 && candidate[i][column].test(num))
 		{
-			g_candidate[i][column].reset(num);
-			--g_candidateNum[i][column];
-			g_affectedFlags[i][column].set(g_currentIndex);
+			candidate[i][column].reset(num);
+			--candidateNum[i][column];
+			affectedFlags[i][column].set(currentIndex);
 		}
 	}
 
@@ -59,11 +59,11 @@ void AddElement(int row, int column, int num)
 		{
 			row = palaceRow + i;
 			column = palaceColumn + j;
-			if (g_map[row][column] == 0 && g_candidate[row][column].test(num))
+			if (shudu_map[row][column] == 0 && candidate[row][column].test(num))
 			{
-				g_candidate[row][column].reset(num);
-				--g_candidateNum[row][column];
-				g_affectedFlags[row][column].set(g_currentIndex);
+				candidate[row][column].reset(num);
+				--candidateNum[row][column];
+				affectedFlags[row][column].set(currentIndex);
 			}
 		}
 	}
@@ -71,21 +71,21 @@ void AddElement(int row, int column, int num)
 
 void RecoverElement(int row, int column, int num)
 {
-	g_map[row][column] = 0;
+	shudu_map[row][column] = 0;
 	for (int i = 0; i<9; ++i)
 	{
-		if (g_map[row][i] == 0 && g_affectedFlags[row][i].test(g_currentIndex))
+		if (shudu_map[row][i] == 0 && affectedFlags[row][i].test(currentIndex))
 		{
-			g_candidate[row][i].set(num);
-			++g_candidateNum[row][i];
-			g_affectedFlags[row][i].reset(g_currentIndex);
+			candidate[row][i].set(num);
+			++candidateNum[row][i];
+			affectedFlags[row][i].reset(currentIndex);
 		}
 
-		if (g_map[i][column] == 0 && g_affectedFlags[i][column].test(g_currentIndex))
+		if (shudu_map[i][column] == 0 && affectedFlags[i][column].test(currentIndex))
 		{
-			g_candidate[i][column].set(num);
-			++g_candidateNum[i][column];
-			g_affectedFlags[i][column].reset(g_currentIndex);
+			candidate[i][column].set(num);
+			++candidateNum[i][column];
+			affectedFlags[i][column].reset(currentIndex);
 		}
 	}
 
@@ -98,16 +98,16 @@ void RecoverElement(int row, int column, int num)
 		{
 			row = palaceRow + i;
 			column = palaceColumn + j;
-			if (g_map[row][column] == 0 && g_affectedFlags[row][column].test(g_currentIndex))
+			if (shudu_map[row][column] == 0 && affectedFlags[row][column].test(currentIndex))
 			{
-				g_candidate[row][column].set(num);
-				++g_candidateNum[row][column];
-				g_affectedFlags[row][column].reset(g_currentIndex);
+				candidate[row][column].set(num);
+				++candidateNum[row][column];
+				affectedFlags[row][column].reset(currentIndex);
 			}
 		}
 	}
 
-	--g_currentIndex;
+	--currentIndex;
 }
 
 void Init()
@@ -116,8 +116,8 @@ void Init()
 	{
 		for (int j = 0; j<9; ++j)
 		{
-			g_candidate[i][j].set();
-			g_candidateNum[i][j] = 10;
+			candidate[i][j].set();
+			candidateNum[i][j] = 10;
 		}
 	}
 
@@ -125,24 +125,24 @@ void Init()
 	{
 		for (int j = 0; j<9; ++j)
 		{
-			if (g_map[i][j] != 0)
-				AddElement(i, j, g_map[i][j]);
+			if (shudu_map[i][j] != 0)
+				AddElement(i, j, shudu_map[i][j]);
 		}
 	}
 }
 
-bool FindBest(int &row, int &column)
+bool F_Best(int &row, int &column)
 {
 	int min = 999;
 	for (int i = 0; i<9; ++i)
 	{
 		for (int j = 0; j<9; ++j)
 		{
-			if (g_map[i][j] == 0 && g_candidateNum[i][j]>1 && g_candidateNum[i][j]<min)
+			if (shudu_map[i][j] == 0 && candidateNum[i][j]>1 && candidateNum[i][j]<min)
 			{
 				row = i;
 				column = j;
-				min = g_candidateNum[i][j];
+				min = candidateNum[i][j];
 			}
 		}
 	}
@@ -152,7 +152,7 @@ bool FindBest(int &row, int &column)
 	return true;
 }
 
-bool CheckResult()
+bool check_resultShudu()
 {
 	set<int> elements;
 	set<int> elements2;
@@ -161,8 +161,8 @@ bool CheckResult()
 	{
 		for (int j = 0; j<9; ++j)
 		{
-			elements.insert(g_map[i][j]);
-			elements2.insert(g_map[j][i]);
+			elements.insert(shudu_map[i][j]);
+			elements2.insert(shudu_map[j][i]);
 		}
 		if (elements.size() != 9)
 			return false;
@@ -182,7 +182,7 @@ bool CheckResult()
 			column = j * 3;
 			for (int k = 0; k<9; ++k)
 			{
-				elements.insert(g_map[row + k / 3][column + k % 3]);
+				elements.insert(shudu_map[row + k / 3][column + k % 3]);
 			}
 			if (elements.size() != 9)
 				return false;
@@ -193,40 +193,35 @@ bool CheckResult()
 	return true;
 }
 
-void OutputResult()
+void printResult()
 {
 	cout << endl;
 	for (int i = 0; i<9; ++i)
 	{
 		for (int j = 0; j<9; ++j)
 		{
-			cout << g_map[i][j] << " ";
+			cout << shudu_map[i][j] << " ";
 		}
 		cout << endl;
 	}
 }
 
-bool Try()
+bool SolveShudu()
 {
 	int row, column;
-	if (!FindBest(row, column))
+	if (!F_Best(row, column))
 		return true;
 	for (int i = 1; i<10; ++i)
 	{
-		if (!g_candidate[row][column].test(i))
+		if (!candidate[row][column].test(i))
 			continue;
-
 		AddElement(row, column, i);
-
-		if (Try())
+		if (SolveShudu())
 		{
-			if (g_currentIndex == 80 && CheckResult())
+			if (currentIndex == 80 && check_resultShudu())
 			{
 				cout << endl << "Result:" << ++resultNum << endl;
-				ofstream outfile;
-				outfile.open("output.txt");
-				OutputResult();
-				outfile.close();
+				printResult();
 				if (resultNum >= maxNum)
 					return false;
 			}
@@ -240,10 +235,11 @@ bool Try()
 
 int main()
 {
+	freopen("out.txt", "w", stdout);
 	double start, end, cost;
 	start = clock();
 	Init();
-	Try();
+	SolveShudu();
 	if (resultNum)
 		cout << endl << "OK!" << endl;
 	else
