@@ -1,0 +1,4 @@
+﻿  main.cpp
+d:\document\code\c\shudu_xiong\shudu_xiong\main.cpp(35): warning C4101: “old”: 未引用的局部变量
+  shudu_xiong.vcxproj -> D:\Document\Code\C\shudu_xiong\Debug\shudu_xiong.exe
+  shudu_xiong.vcxproj -> D:\Document\Code\C\shudu_xiong\Debug\shudu_xiong.pdb (Partial PDB)
