@@ -6,7 +6,9 @@
 #include<cstdio>
 #include<stdio.h>
 #include<fstream>
-
+#include<math.h>
+#include<stdlib.h>
+#include<sstream>
 using namespace std;
 int currentIndex = -1;
 bitset<81> affectedFlags[9][9];
@@ -14,7 +16,7 @@ bitset<10> candidate[9][9];
 int candidateNum[9][9];
 int resultNum;
 int maxNum = 5;
-ofstream out("suduku.txt");
+ofstream out("./suduku.txt");
 
 int shudu_map[9][9] = {
 	{ 7,0,0,0,0,0,0,0,0 },
@@ -219,7 +221,7 @@ bool SolveShudu()
 		{
 			if (currentIndex == 80 && check_resultShudu())
 			{
-				out << endl << "Result:" << ++resultNum << endl;
+				++resultNum;
 				printResult();
 				if (resultNum >= maxNum)
 					return false;
@@ -232,25 +234,31 @@ bool SolveShudu()
 	return true;
 }
 
+bool isNum(string str)
+{
+	stringstream sin(str);
+	double d;
+	char c;
+	if (!(sin >> d))
+	{
+		return false;
+	}
+	if (sin >> c)
+	{
+		return false;
+	}
+	return true;
+}
+
 int main(int argc, char *argv[])
 {
-	cin >> maxNum;
+	maxNum = atoi(argv[2]);
 	if (out.is_open())
 	{
-		double start, end, cost;
-		start = clock();
-		Init();
-		SolveShudu();
-		if (resultNum)
-			out << endl << "OK!" << endl;
-		else
-			out << endl << "Wrong Input!" << endl;
+			Init();
+			SolveShudu();
+			out.close();}
 
-		end = clock();
-		cost = end - start;
-		out << "Costed time:" << cost << "ms" << endl;
-		out.close();
-	}
 
 	system("pause");
 	return 0;
