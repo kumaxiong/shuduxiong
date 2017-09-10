@@ -252,12 +252,26 @@ bool isNum(string str)
 
 int main(int argc, char *argv[])
 {
+	string s = argv[2];
+	int length = s.length();
+	for (int i = 0; i < length; i++) {
+		int temp = int(s[i]);
+		if(temp >= 48 && temp <= 57){
+			continue;
+		}
+		else
+		{
+			out << "error" << endl;
+			return 0;
+		}
+	}
 	maxNum = atoi(argv[2]);
 	if (out.is_open())
 	{
 			Init();
 			SolveShudu();
-			out.close();}
+			out.close();
+	}
 
 
 	system("pause");
