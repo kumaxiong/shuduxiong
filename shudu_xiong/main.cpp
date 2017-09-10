@@ -272,8 +272,5 @@ int main(int argc, char *argv[])
 			SolveShudu();
 			out.close();
 	}
-
-
-	system("pause");
 	return 0;
 }
