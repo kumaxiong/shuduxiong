@@ -4,16 +4,17 @@
 #include<cstring>
 #include<time.h>
 #include<cstdio>
+#include<stdio.h>
 #include<fstream>
 
 using namespace std;
-
 int currentIndex = -1;
 bitset<81> affectedFlags[9][9];
 bitset<10> candidate[9][9];
 int candidateNum[9][9];
 int resultNum;
-const int maxNum = 10000;
+int maxNum = 5;
+ofstream out("suduku.txt");
 
 int shudu_map[9][9] = {
 	{ 7,0,0,0,0,0,0,0,0 },
@@ -31,8 +32,6 @@ void AddElement(int row, int column, int num)
 {
 	++currentIndex;
 	shudu_map[row][column] = num;
-
-	int old;
 	for (int i = 0; i<9; ++i)
 	{
 		if (shudu_map[row][i] == 0 && candidate[row][i].test(num))
@@ -195,14 +194,14 @@ bool check_resultShudu()
 
 void printResult()
 {
-	cout << endl;
+	out << endl;
 	for (int i = 0; i<9; ++i)
 	{
 		for (int j = 0; j<9; ++j)
 		{
-			cout << shudu_map[i][j] << " ";
+			out << shudu_map[i][j] << " ";
 		}
-		cout << endl;
+		out << endl;
 	}
 }
 
@@ -220,7 +219,7 @@ bool SolveShudu()
 		{
 			if (currentIndex == 80 && check_resultShudu())
 			{
-				cout << endl << "Result:" << ++resultNum << endl;
+				out << endl << "Result:" << ++resultNum << endl;
 				printResult();
 				if (resultNum >= maxNum)
 					return false;
@@ -233,22 +232,26 @@ bool SolveShudu()
 	return true;
 }
 
-int main()
+int main(int argc, char *argv[])
 {
-	freopen("out.txt", "w", stdout);
-	double start, end, cost;
-	start = clock();
-	Init();
-	SolveShudu();
-	if (resultNum)
-		cout << endl << "OK!" << endl;
-	else
-		cout << endl << "Wrong Input!" << endl;
+	cin >> maxNum;
+	if (out.is_open())
+	{
+		double start, end, cost;
+		start = clock();
+		Init();
+		SolveShudu();
+		if (resultNum)
+			out << endl << "OK!" << endl;
+		else
+			out << endl << "Wrong Input!" << endl;
 
-	end = clock();
-	cost = end - start;
-	cout << "Costed time:" << cost << "ms" << endl;
-	char c;
-	cin >> c;
+		end = clock();
+		cost = end - start;
+		out << "Costed time:" << cost << "ms" << endl;
+		out.close();
+	}
+
+	system("pause");
 	return 0;
 }
